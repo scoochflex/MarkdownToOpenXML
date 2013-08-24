@@ -99,7 +99,7 @@ namespace MarkdownToOpenXML
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    if (Regex.Match(line, @"^$").Success)
+                    if (line=="")
                     {
                         if (tmp + line != "") md.Add(tmp + line);
                         tmp = "";
