@@ -10,6 +10,15 @@ More to come.
 
 
 ## Building project
-
+---
 In order to build the project you will need to install the [Open XML SDK 2.5](http://www.microsoft.com/en-ca/download/details.aspx?id=30425)
-and add a reference to **DocumentFormat.OpenXML** if it does not exist
+and add a reference to 
+**DocumentFormat.OpenXML** if it does not exist
+
+
++ Thing 1
++ Thing 2 
++ Thing 3
+Thing 5 thing 6
+
+frtgtrgtrgtrgtrgrt

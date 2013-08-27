@@ -45,6 +45,7 @@
     <Compile Include="Classes\Ranges.cs" />
     <Compile Include="FileCreation.cs" />
     <Compile Include="MarkdownToOpenXML.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

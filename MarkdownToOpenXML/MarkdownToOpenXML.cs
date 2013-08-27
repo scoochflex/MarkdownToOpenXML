@@ -42,6 +42,8 @@ namespace MarkdownToOpenXML
 
         public static void CreateDocX(string md, string docName)
         {
+            Parser parser = new Parser();
+            parser.Parse(md);
             Body body = MarkdownToDocBody(md);
             SaveDocX(body, docName);
         }
