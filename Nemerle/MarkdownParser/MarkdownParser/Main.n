@@ -17,35 +17,53 @@ module Program
     {
         any : char = ['\u0000'..'\uFFFF'];
         number = ['0' .. '9'];
-        paragraph: string = any*;
-        document : DocX = paragraph;
+        heading : Node = '*'+ (!('*'/'\n') any)* '*'+;
+        docPiece : Node = heading;
+        paragraph: Node = (!docPiece any)*;
+        document : DocX = (docPiece / paragraph)*;
       //Rules
     }
   )]
   public class Parser
   {
+      [Record]
+      class Node
+      {
+          public variant NodeType
+          {
+              | Heading
+              | Paragraph
+          }
+          public nodeType : NodeType;
+          public text: string;
+      }
       public mutable filename : string;
+      heading(_ : NToken, x: List[char], _ : NToken):Node
+      {
+          Node(Node.NodeType.Heading(),string.Join("",x));
+      }
       any(letter: NToken):char
       {
           GetText(letter)[0]
       }
-      paragraph( letters : List[char]):string
+      paragraph( letters : List[char]):Node
       {
-          string.Join("",letters)
+          Node(Node.NodeType.Paragraph(),string.Join("",letters))
       }
-      document (text:string):DocX
+      document (pieces:List[Node]):DocX
       {
           def doc = DocX.Create(filename);
-          _ = doc.InsertParagraph(text);
+          foreach(piece in pieces)
+            _ = doc.InsertParagraph(piece.text);
           doc;
       }
     //Handler methods for the rules
   }
     
   
-  test : string = "This is a test";
   Main() : void
   {
+      def test = System.IO.File.ReadAllText("test.md");
       def parse = Parser();
       parse.filename = "./test.docx";
       def result = parse.Parse(test);
