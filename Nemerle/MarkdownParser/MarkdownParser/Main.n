@@ -16,11 +16,16 @@ module Program
     grammar
     {
         any : char = ['\u0000'..'\uFFFF'];
+        anyChar : char = !('\n' / '\r') any;
         number = ['0' .. '9'];
-        heading : Node = '*'+ (!('*'/'\n') any)* '*'+;
+        nonvoidnewline = ("\n\r" / "\r\n" / '\r' / 'n');
+        newline : void = nonvoidnewline;
+        newlines : void = newline+;
+        heading : Node = '#'+ (!('#') anyChar)* '#'* newlines?;
         docPiece : Node = heading;
-        paragraph: Node = (!docPiece any)*;
-        document : DocX = (docPiece / paragraph)*;
+        paragraph: Node = (!docPiece anyChar+ newline?)+;
+        linebreak : Node = nonvoidnewline;
+        document : DocX = (docPiece / paragraph / linebreak)*;
       //Rules
     }
   )]
@@ -33,6 +38,7 @@ module Program
           {
               | Heading
               | Paragraph
+              | LineBreak
           }
           public nodeType : NodeType;
           public text: string;
@@ -40,15 +46,21 @@ module Program
       public mutable filename : string;
       heading(_ : NToken, x: List[char], _ : NToken):Node
       {
-          Node(Node.NodeType.Heading(),string.Join("",x));
+          def text = string.Join("",x);
+          Node(Node.NodeType.Heading(),text);
+      }
+      linebreak(_ : NToken):Node
+      {
+          Node(Node.NodeType.LineBreak(),"");
       }
       any(letter: NToken):char
       {
           GetText(letter)[0]
       }
-      paragraph( letters : List[char]):Node
+      paragraph( letters : List[List[char]]):Node
       {
-          Node(Node.NodeType.Paragraph(),string.Join("",letters))
+          def text = string.Join("",letters.Select((x)=>string.Join("",x)));
+          Node(Node.NodeType.Paragraph(),text)
       }
       document (pieces:List[Node]):DocX
       {
@@ -63,7 +75,7 @@ module Program
   
   Main() : void
   {
-      def test = System.IO.File.ReadAllText("test.md");
+      def test = System.IO.File.ReadAllText("test.md") + "\n";
       def parse = Parser();
       parse.filename = "./test.docx";
       def result = parse.Parse(test);
