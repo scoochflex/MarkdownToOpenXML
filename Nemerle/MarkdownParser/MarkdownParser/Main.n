@@ -1,0 +1,46 @@
+﻿using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+using Nemerle.Peg;
+
+using System;
+using System.Collections.Generic;
+using System.Console;
+using System.Linq;
+
+module Program
+{
+    [PegGrammar(Options = EmitDebugSources, document,
+    grammar
+    {
+        any : char = ['\u0000'..'\uFFFF'];
+        number = ['0' .. '9'];
+        paragraph: string = any*;
+        document : string = paragraph;
+      //Rules
+    }
+  )]
+  public class Parser
+  {
+      any(letter: NToken):char
+      {
+          GetText(letter)[0]
+      }
+      paragraph( letters : List[char]):string
+      {
+          string.Join("",letters)
+      }
+    //Handler methods for the rules
+  }
+    
+  
+  test : string = "This is a test";
+  Main() : void
+  {
+      def parse = Parser();
+      def result = parse.Parse(test);
+      WriteLine(result.Value);
+    WriteLine("Hi!");
+    _ = ReadKey();
+  }
+}
