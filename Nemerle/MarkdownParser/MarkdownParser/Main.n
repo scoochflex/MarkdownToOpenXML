@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Console;
 using System.Linq;
 
+using Novacode;
+
 module Program
 {
     [PegGrammar(Options = EmitDebugSources, document,
@@ -16,12 +18,13 @@ module Program
         any : char = ['\u0000'..'\uFFFF'];
         number = ['0' .. '9'];
         paragraph: string = any*;
-        document : string = paragraph;
+        document : DocX = paragraph;
       //Rules
     }
   )]
   public class Parser
   {
+      public mutable filename : string;
       any(letter: NToken):char
       {
           GetText(letter)[0]
@@ -29,6 +32,12 @@ module Program
       paragraph( letters : List[char]):string
       {
           string.Join("",letters)
+      }
+      document (text:string):DocX
+      {
+          def doc = DocX.Create(filename);
+          _ = doc.InsertParagraph(text);
+          doc;
       }
     //Handler methods for the rules
   }
@@ -38,7 +47,9 @@ module Program
   Main() : void
   {
       def parse = Parser();
+      parse.filename = "./test.docx";
       def result = parse.Parse(test);
+      result.Value.Save();
       WriteLine(result.Value);
     WriteLine("Hi!");
     _ = ReadKey();

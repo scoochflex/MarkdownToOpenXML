@@ -36,6 +36,11 @@
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DocX, Version=1.0.0.12, Culture=neutral, PublicKeyToken=37109ff9afe21939">
+      <Name>DocX</Name>
+      <AssemblyName>DocX.dll</AssemblyName>
+      <HintPath>..\packages\DocX.1.0.0.12\lib\DocX.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Nemerle.Peg, Version=1.2.0.164, Culture=neutral, PublicKeyToken=null">
       <Name>Nemerle.Peg</Name>
@@ -74,6 +79,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config">
+      <SubType>Content</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
   <!--
