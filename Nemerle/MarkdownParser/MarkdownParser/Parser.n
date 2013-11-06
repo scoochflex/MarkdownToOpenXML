@@ -23,7 +23,12 @@ namespace MarkdownParser
         content : ContentNode = anyChar;
         newline : void = nonvoidnewline;
         newlines : void = newline+;
-        heading : Node = '#'+ (!('#') anyChar)* '#'* newlines?;
+        spaces : void = ' '*;
+        setextBottom : char = '=' spaces '=' spaces '=' (spaces '=')* / '-' spaces '-' spaces '-' (spaces '-')*;
+        setextHeading : Node = anyChar* newline setextBottom newline;
+        headingMatchSymbol : char = '#';
+        atxHeading : Node = headingMatchSymbol+ spaces (!('#') anyChar)* '#'* newlines?;
+        heading : Node = atxHeading / setextHeading;
         docPiece : Node = heading;
         paragraph: Node = (!docPiece anyChar+ newline?)+;
         linebreak : Node = nonvoidnewline;
@@ -38,10 +43,26 @@ namespace MarkdownParser
       {
           ContentNode(ContentNode.NodeType.Text(),x.ToString());
       }
-      heading(_ : NToken, x: List[char], _ : NToken):Node
+      headingMatchSymbol(x : NToken) : char
       {
-          def text = string.Join("",x);
-          Node(Node.NodeType.Heading(),text);
+          GetText(x)[0];
+      }
+      setextBottom(symbol: NToken, _: NToken, _: NToken, _: List[NToken]):char
+      {
+          GetText(symbol)[0];
+      }
+      setextHeading(text: List[char], symbol :char) : Node
+      {
+          createHeader(if (symbol == '=') 1 else 2, text);
+      }
+      createHeader(level: int, letters: List[char]) : Node
+      {
+          def text = string.Join("",letters);
+          Node(Node.NodeType.Heading(level),text);
+      }
+      atxHeading(lvl : List[char], text: List[char], _ : NToken):Node
+      {
+          createHeader(lvl.Count(),text);
       }
       linebreak(_ : NToken):Node
       {
