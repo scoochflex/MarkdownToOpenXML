@@ -75,7 +75,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.n" />
+    <Compile Include="Node.n">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Parser.n">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
+    <Compile Include="WordCreator.n">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

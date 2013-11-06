@@ -8,80 +8,20 @@ using System.Collections.Generic;
 using System.Console;
 using System.Linq;
 
-using Novacode;
-
-module Program
+namespace MarkdownParser
 {
-    [PegGrammar(Options = EmitDebugSources, document,
-    grammar
+    module Program
     {
-        any : char = ['\u0000'..'\uFFFF'];
-        anyChar : char = !('\n' / '\r') any;
-        number = ['0' .. '9'];
-        nonvoidnewline = ("\n\r" / "\r\n" / '\r' / 'n');
-        newline : void = nonvoidnewline;
-        newlines : void = newline+;
-        heading : Node = '#'+ (!('#') anyChar)* '#'* newlines?;
-        docPiece : Node = heading;
-        paragraph: Node = (!docPiece anyChar+ newline?)+;
-        linebreak : Node = nonvoidnewline;
-        document : DocX = (docPiece / paragraph / linebreak)*;
-      //Rules
+        Main() : void
+        {
+            def test = System.IO.File.ReadAllText("test.md") + "\n";
+            def parse = Parser();
+            parse.filename = "./test.docx";
+            def result = parse.Parse(test);
+            //result.Value.Save();
+            WriteLine(result.Value);
+            WriteLine("Hi!");
+            _ = ReadKey();
+        }
     }
-  )]
-  public class Parser
-  {
-      [Record]
-      class Node
-      {
-          public variant NodeType
-          {
-              | Heading
-              | Paragraph
-              | LineBreak
-          }
-          public nodeType : NodeType;
-          public text: string;
-      }
-      public mutable filename : string;
-      heading(_ : NToken, x: List[char], _ : NToken):Node
-      {
-          def text = string.Join("",x);
-          Node(Node.NodeType.Heading(),text);
-      }
-      linebreak(_ : NToken):Node
-      {
-          Node(Node.NodeType.LineBreak(),"");
-      }
-      any(letter: NToken):char
-      {
-          GetText(letter)[0]
-      }
-      paragraph( letters : List[List[char]]):Node
-      {
-          def text = string.Join("",letters.Select((x)=>string.Join("",x)));
-          Node(Node.NodeType.Paragraph(),text)
-      }
-      document (pieces:List[Node]):DocX
-      {
-          def doc = DocX.Create(filename);
-          foreach(piece in pieces)
-            _ = doc.InsertParagraph(piece.text);
-          doc;
-      }
-    //Handler methods for the rules
-  }
-    
-  
-  Main() : void
-  {
-      def test = System.IO.File.ReadAllText("test.md") + "\n";
-      def parse = Parser();
-      parse.filename = "./test.docx";
-      def result = parse.Parse(test);
-      result.Value.Save();
-      WriteLine(result.Value);
-    WriteLine("Hi!");
-    _ = ReadKey();
-  }
 }
